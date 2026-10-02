@@ -13,7 +13,18 @@ export interface ScanOptions {
 }
 
 const COMMON_IGNORE = ["**/node_modules/**", "**/Pods/**", "**/build/**", "**/dist/**", "**/.git/**", "**/DerivedData/**"];
-const TEST_IGNORE = ["**/*.test.*", "**/*.spec.*", "**/__tests__/**", "**/__mocks__/**"];
+const TEST_IGNORE = [
+  "**/*.test.*",
+  "**/*.spec.*",
+  "**/test.*",
+  "**/tests.*",
+  "**/test/**",
+  "**/tests/**",
+  "**/__tests__/**",
+  "**/__mocks__/**",
+  "**/e2e/**",
+  "**/detox/**",
+];
 const JS_IGNORE = ["**/android/**", "**/ios/**", "**/*.d.ts", "**/*.min.js", "**/*.bundle.js"];
 
 const IGNORE_COMMENT = /rn-secscan-ignore(?:\s+([A-Z0-9, ]+))?/;

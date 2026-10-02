@@ -54,6 +54,11 @@ describe("RNSEC003 hardcoded secrets", () => {
     expect(run(hardcodedSecrets, `const apiKey = "YOUR_API_KEY_HERE";`)).toHaveLength(0);
     expect(run(hardcodedSecrets, `const passwordError = "Password is required";`)).toHaveLength(0);
     expect(run(hardcodedSecrets, `const apiKey = process.env.API_KEY;`)).toHaveLength(0);
+    expect(run(hardcodedSecrets, `const AppPasswords = "/settings/app-passwords";`)).toHaveLength(0);
+    expect(run(hardcodedSecrets, `const SYSTEM_USER_ACCESS_TOKEN_ROLE = "system_user_access_token_role";`)).toHaveLength(0);
+    expect(run(hardcodedSecrets, `const E2E_PRIVATE_KEY = "RC_E2E_PRIVATE_KEY";`)).toHaveLength(0);
+    expect(run(hardcodedSecrets, `const E2E_SEC_CHANGE_PASSWORD = "e2e_sec_change_password";`)).toHaveLength(0);
+    expect(run(hardcodedSecrets, `const HEADER_X_MATTERMOST_PREAUTH_SECRET = "X-Mattermost-Preauth-Secret";`)).toHaveLength(0);
   });
 });
 

@@ -14,11 +14,28 @@ const KNOWN: { name: string; re: RegExp }[] = [
 const SECRET_NAME =
   /(api[_-]?key|secret|passw(or)?d|private[_-]?key|access[_-]?token|auth[_-]?token|client[_-]?secret|bearer)/i;
 const PLACEHOLDER = /(your|example|placeholder|changeme|change_me|xxx|\*\*\*|todo|dummy|sample|test|<.*>|\$\{)/i;
+const ROUTE_PATH = /^\/[A-Za-z0-9/_-]+$/;
 
 function stringValue(node: Node | undefined): string | undefined {
   if (!node) return undefined;
   if (Node.isStringLiteral(node) || Node.isNoSubstitutionTemplateLiteral(node)) return node.getLiteralValue();
   return undefined;
+}
+
+function isNameDerivedValue(name: string, value: string): boolean {
+  if (!/^[A-Za-z0-9]+(?:[_-][A-Za-z0-9]+)+$/.test(value)) return false;
+  const tokens = (text: string) =>
+    text
+      .replace(/([a-z])([A-Z])/g, "$1 $2")
+      .toLowerCase()
+      .split(/[^a-z0-9]+/)
+      .filter(Boolean);
+  const valueTokens = new Set(tokens(value));
+  const nameTokens = tokens(name);
+  return (
+    valueTokens.size >= 2 &&
+    (nameTokens.every((token) => valueTokens.has(token)) || [...valueTokens].every((token) => nameTokens.includes(token)))
+  );
 }
 
 export const hardcodedSecrets: JsRule = {
@@ -69,8 +86,9 @@ export const hardcodedSecrets: JsRule = {
       if (!SECRET_NAME.test(name)) continue;
       const value = stringValue(init);
       if (!value || value.length < 8) continue;
-      if (/\s/.test(value) || /^https?:\/\//i.test(value)) continue;
+      if (/\s/.test(value) || /^https?:\/\//i.test(value) || ROUTE_PATH.test(value)) continue;
       if (PLACEHOLDER.test(value)) continue;
+      if (isNameDerivedValue(name, value)) continue;
       if (shannonEntropy(value) < 3.0) continue;
       flagged.add(init);
       findings.push(

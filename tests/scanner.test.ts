@@ -1,4 +1,6 @@
 import { describe, it, expect } from "vitest";
+import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { scan } from "../src/scanner";
 import { allRules } from "../src/rules";
@@ -24,6 +26,21 @@ describe("scanner end to end", () => {
     const f = scan(vuln, { base: root })[0];
     expect(f.file.startsWith("fixtures/vulnerable/")).toBe(true);
     expect(f.file).not.toContain("\\");
+  });
+
+  it("skips common test paths unless includeTests is enabled", () => {
+    const temp = fs.mkdtempSync(path.join(os.tmpdir(), "rn-secscan-"));
+    const finding = `const apiKey = "k8Vd2xQp9LmZr4TbW7Yn";`;
+    try {
+      fs.mkdirSync(path.join(temp, "e2e"));
+      fs.writeFileSync(path.join(temp, "test.ts"), finding);
+      fs.writeFileSync(path.join(temp, "e2e", "screen.ts"), finding);
+
+      expect(scan(temp, { base: temp })).toEqual([]);
+      expect(scan(temp, { base: temp, includeTests: true })).toHaveLength(2);
+    } finally {
+      fs.rmSync(temp, { recursive: true, force: true });
+    }
   });
 });
 
