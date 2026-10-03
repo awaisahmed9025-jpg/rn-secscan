@@ -75,7 +75,7 @@ Put a comment on the same line or the line above:
 
 `rn-secscan` is a static security scanner for React Native projects. It checks JavaScript and TypeScript source files plus Android and iOS configuration, then reports findings in the terminal, JSON, or SARIF.
 
-The scanner uses deterministic rules. It does not currently use AI, trace data flow, or apply code fixes.
+The scanner's findings come from deterministic rules. An optional Claude judge can triage exported findings; it does not replace the scanner, trace data flow, or apply code fixes.
 
 ## Quick Start
 
@@ -133,6 +133,9 @@ rn-secscan scan [path]
   --include-tests                    Include test and mock files
 
 rn-secscan rules                     List rules and their MASVS mappings
+rn-secscan export <path> -o <file>   Export findings and redacted source context as JSONL
+rn-secscan judge [options]            Ask Claude to triage exported findings
+rn-secscan eval --labels <file>       Measure rules-only or rules-plus-judge precision
 ```
 
 When running from this source checkout, prefix commands with `node dist/cli.js`. For example:
@@ -143,6 +146,22 @@ node dist/cli.js scan /path/to/app --fail-on high
 ```
 
 The default scan target is the current directory. Findings do not fail the command unless `--fail-on` is set. A finding at or above the selected severity returns exit code 1, which is useful for CI.
+
+## Optional Claude Triage
+
+Export findings from an app you are allowed to share, then label them before evaluating triage:
+
+```powershell
+node dist/cli.js export ..\Rocket.Chat.ReactNative -o data\dev-repoA.jsonl --csv data\labels.csv --set dev --repo-name repo-A
+$env:ANTHROPIC_API_KEY = "<your key>"
+$env:ANTHROPIC_MODEL = "MODEL_ID_FROM_ANTHROPIC_CONSOLE"
+node dist/cli.js judge --input data\dev-repoA.jsonl --output data\predictions-dev.jsonl --model $env:ANTHROPIC_MODEL --confirm-code-transfer
+node dist/cli.js eval --labels data\labels.csv --predictions data\predictions-dev.jsonl
+```
+
+The `judge` command sends each finding's rule metadata, redacted context window, and optional enclosing function to Anthropic. It does not send the repository name, path, or commit. Redaction is best-effort, not a guarantee: inspect exports before sharing them, and never send employer, private, or otherwise confidential code. The `--confirm-code-transfer` flag is required to make the transfer explicit. Keep the API key in the environment; do not put it in a command committed to a script or in a repository file.
+
+Judge output is JSONL with `id`, `keep`, `confidence`, and `reason`. `keep: true` means retain the finding. The eval command accepts the `keep` decisions and compares them with labeled `TP`/`FP` rows; `UNSURE` rows are excluded. Use the same set of findings for the rules-only and AI-assisted comparison.
 
 ## GitHub Actions
 

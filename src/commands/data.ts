@@ -1,10 +1,46 @@
 import fs from "node:fs";
+import Anthropic from "@anthropic-ai/sdk";
 import type { Command } from "commander";
 import { appendLabelSheet, exportFindings, writeJsonl } from "../export";
 import { evaluate, formatEval, parseLabels, parsePredictions } from "../eval";
+import { judgeRecords, parseExportJsonl, predictionsJsonl } from "../judge";
 
 /** Registers the `export` and `eval` commands used for building and measuring the AI triage layer. */
 export function registerDataCommands(program: Command): void {
+  program
+    .command("judge")
+    .description("send redacted finding context to Claude for optional triage")
+    .requiredOption("-i, --input <file>", "export JSONL file to judge")
+    .requiredOption("-o, --output <file>", "write JSONL predictions for the eval command")
+    .requiredOption("--model <model>", "Claude model ID to use")
+    .requiredOption("--confirm-code-transfer", "confirm redacted source context may be sent to Anthropic")
+    .action(async (opts) => {
+      const apiKey = process.env.ANTHROPIC_API_KEY;
+      if (!apiKey) {
+        process.stderr.write("rn-secscan: set ANTHROPIC_API_KEY in the environment before running judge\n");
+        process.exitCode = 2;
+        return;
+      }
+      if (!fs.existsSync(opts.input)) {
+        process.stderr.write(`rn-secscan: input file not found: ${opts.input}\n`);
+        process.exitCode = 2;
+        return;
+      }
+
+      try {
+        const records = parseExportJsonl(fs.readFileSync(opts.input, "utf8"));
+        process.stderr.write(
+          `rn-secscan: sending redacted context for ${records.length} finding(s) to Anthropic model ${opts.model}\n`
+        );
+        const predictions = await judgeRecords(records, new Anthropic({ apiKey }), opts.model);
+        fs.writeFileSync(opts.output, predictionsJsonl(predictions));
+        process.stderr.write(`rn-secscan: wrote ${predictions.length} prediction(s) to ${opts.output}\n`);
+      } catch (error) {
+        process.stderr.write(`rn-secscan: judge failed: ${(error as Error).message}\n`);
+        process.exitCode = 1;
+      }
+    });
+
   program
     .command("export")
     .description("scan a repo and export findings with code context for labeling or the AI judge")
