@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import fs from "node:fs";
+import { registerDataCommands } from "./commands/data";
 import { Command } from "commander";
 import { scan } from "./scanner";
 import { allRules } from "./rules";
@@ -58,5 +59,7 @@ program
       process.stdout.write(`${r.id}  ${r.severity.padEnd(6)} ${r.masvs.padEnd(18)} ${r.title}\n`);
     }
   });
+
+registerDataCommands(program);
 
 program.parse();
