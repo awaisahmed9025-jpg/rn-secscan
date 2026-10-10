@@ -1,0 +1,31 @@
+# Written by the rn-secscan author; report separately from the default registry packs.
+rules:
+  - id: rnsec-benchmark-asyncstorage-sensitive
+    languages: [javascript, typescript]
+    message: Sensitive-looking value passed to AsyncStorage
+    severity: WARNING
+    patterns:
+      - pattern: AsyncStorage.setItem($KEY, $VALUE)
+      - metavariable-regex:
+          metavariable: $KEY
+          regex: (?i)(token|password|secret|session|auth|credential)
+
+  - id: rnsec-benchmark-sensitive-console
+    languages: [javascript, typescript]
+    message: Sensitive-looking value passed to console output
+    severity: WARNING
+    patterns:
+      - pattern-either:
+          - pattern: console.log(..., $VALUE, ...)
+          - pattern: console.info(..., $VALUE, ...)
+          - pattern: console.warn(..., $VALUE, ...)
+          - pattern: console.error(..., $VALUE, ...)
+      - metavariable-regex:
+          metavariable: $VALUE
+          regex: (?i)(token|password|secret|session|credential)
+
+  - id: rnsec-benchmark-cleartext-http
+    languages: [javascript, typescript]
+    message: Cleartext HTTP URL
+    severity: WARNING
+    pattern-regex: ['(?i)["`'']http://(?!localhost|127\.0\.0\.1|0\.0\.0\.0|10\.0\.2\.2|\[::1\])[^"`'']+["`'']']

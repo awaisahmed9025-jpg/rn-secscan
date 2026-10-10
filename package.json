@@ -1,0 +1,55 @@
+{
+  "name": "rn-secscan",
+  "version": "0.1.0",
+  "description": "Security scanner for React Native apps. Outputs SARIF mapped to OWASP MASVS.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "rn-secscan": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/cli.ts",
+    "test": "vitest run",
+    "scan:fixtures": "tsx src/cli.ts scan fixtures/vulnerable",
+    "benchmark:security": "node benchmarks/run-security-tools.mjs",
+    "benchmark:testbed": "npm run build && node benchmarks/score-testbed.mjs",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "keywords": [
+    "react-native",
+    "security",
+    "sast",
+    "sarif",
+    "owasp",
+    "masvs",
+    "static-analysis"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.131.0",
+    "commander": "^15.0.0",
+    "fast-glob": "^3.3.3",
+    "fast-xml-parser": "^5.11.2",
+    "plist": "^3.1.0",
+    "ts-morph": "^28.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.3",
+    "@types/plist": "^3.0.5",
+    "eslint": "^9.38.0",
+    "@typescript-eslint/parser": "^8.46.1",
+    "eslint-plugin-security": "^3.0.1",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "vitest": "^5.0.3"
+  }
+}

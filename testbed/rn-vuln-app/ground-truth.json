@@ -1,0 +1,23 @@
+[
+  {"file":"App.tsx","line":9,"category":"asyncstorage-secrets","expectedVerdict":"vulnerable","expectedDetection":"detect"},
+  {"file":"App.tsx","line":23,"category":"cleartext-http","expectedVerdict":"vulnerable","expectedDetection":"detect"},
+  {"file":"App.tsx","line":4,"category":"hardcoded-secrets","expectedVerdict":"vulnerable","expectedDetection":"detect"},
+  {"file":"App.tsx","line":36,"category":"sensitive-logging","expectedVerdict":"vulnerable","expectedDetection":"detect"},
+  {"file":"App.tsx","line":44,"category":"webview","expectedVerdict":"vulnerable","expectedDetection":"detect"},
+  {"file":"android/app/src/main/AndroidManifest.xml","line":4,"category":"android-backup","expectedVerdict":"vulnerable","expectedDetection":"detect"},
+  {"file":"android/app/src/main/AndroidManifest.xml","line":5,"category":"android-cleartext","expectedVerdict":"vulnerable","expectedDetection":"detect"},
+  {"file":"android/app/src/main/AndroidManifest.xml","line":10,"category":"exported-components","expectedVerdict":"vulnerable","expectedDetection":"detect"},
+  {"file":"ios/RNVulnApp/Info.plist","line":9,"category":"ios-ats","expectedVerdict":"vulnerable","expectedDetection":"detect"},
+  {"file":"App.tsx","line":10,"category":"asyncstorage-secrets","expectedVerdict":"safe","expectedDetection":"none"},
+  {"file":"App.tsx","line":24,"category":"cleartext-http","expectedVerdict":"safe","expectedDetection":"none"},
+  {"file":"App.tsx","line":5,"category":"hardcoded-secrets","expectedVerdict":"safe","expectedDetection":"none"},
+  {"file":"App.tsx","line":37,"category":"sensitive-logging","expectedVerdict":"safe","expectedDetection":"none"},
+  {"file":"App.tsx","line":45,"category":"webview","expectedVerdict":"safe","expectedDetection":"none"},
+  {"file":"android/app/src/release/AndroidManifest.xml","line":4,"category":"android-backup","expectedVerdict":"safe","expectedDetection":"none"},
+  {"file":"android/app/src/release/AndroidManifest.xml","line":5,"category":"android-cleartext","expectedVerdict":"safe","expectedDetection":"none"},
+  {"file":"android/app/src/release/AndroidManifest.xml","line":8,"category":"exported-components","expectedVerdict":"safe","expectedDetection":"none"},
+  {"file":"ios/Safe/Info.plist","line":9,"category":"ios-ats","expectedVerdict":"safe","expectedDetection":"none"},
+  {"file":"src/storage-misses.ts","line":5,"category":"asyncstorage-secrets","expectedVerdict":"vulnerable","expectedDetection":"miss"},
+  {"file":"src/storage-misses.ts","line":13,"category":"asyncstorage-secrets","expectedVerdict":"vulnerable","expectedDetection":"miss"},
+  {"file":"src/network-misses.ts","line":2,"category":"ssl-pinning","expectedVerdict":"vulnerable","expectedDetection":"miss"}
+]
