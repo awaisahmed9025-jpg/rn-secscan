@@ -247,13 +247,13 @@ The rich-test findings were reviewed from source context before any judge call. 
 
 | Rich-test app | Decided TP | Decided FP | Unsure |
 |---|---:|---:|---:|
-| repo-R mobile | 5 | 11 | 0 |
+| repo-R mobile | 4 | 12 | 0 |
 | arXiv Papers mobile | 1 | 0 | 0 |
 | Tsinghua Info | 4 | 3 | 0 |
 | repo-U | 0 | 0 | 0 |
-| **Total** | **10** | **14** | **0** |
+| **Total** | **9** | **15** | **0** |
 
-The current local evaluation reports rich-test rules-only precision of **10/24 = 41.7%** (95% CI **24.5%–61.2%**). This is an exploratory rich-test result, not a held-out benchmark claim, and it must not be used to tune the scanner or judge prompt after the fact.
+After a source review correction, the local evaluation reports rich-test rules-only precision of **9/24 = 37.5%** (95% CI **21.2%–57.3%**). The corrected finding stores a short-lived analytics identifier, not an authentication credential. This is an exploratory rich-test result, not a held-out benchmark claim, and it must not be used to tune the scanner or judge prompt after the fact.
 
 ## Benchmark method
 
@@ -276,6 +276,23 @@ On 2026-10-10, the authored `rn-vuln-app` ground truth was scored with rn-secsca
 | Semgrep | 3 | 1 | 9 | 3/4 = 75.0% (95% CI 30.1%–95.4%) | 3/12 = 25.0% (95% CI 8.9%–53.2%) | 37.5% |
 
 This is a targeted regression suite written by the scanner author, not an independent estimate. Semgrep's custom rules are fixture-specific and must not be presented as the performance of its general community rules.
+
+### Three-tool rich-test and held-out scan
+
+On 2026-10-10, ESLint 9.39.5 with the repository's `eslint-plugin-security` config and Semgrep 1.180.0 (`p/default`, `p/secrets`) were run on all four pinned rich-test targets and all six pinned held-out app subtrees. The existing rn-secscan rich-test reports were produced at `f196cd9`; held-out rn-secscan reports remain at the frozen `f4a7d42` ruleset. No rule or prompt was changed using these sets.
+
+| Set | Tool | Raw findings | Mapped pool locations | TP | FP |
+|---|---|---:|---:|---:|---:|
+| Rich-test | rn-secscan | 24 | 24 | 9 | 15 |
+| Rich-test | Semgrep | 7 | 3 | 0 | 3 |
+| Rich-test | ESLint | 892 | 0 | — | — |
+| Held-out | rn-secscan | 8 | 7 | 2 | 5 |
+| Held-out | Semgrep | 132 | 2 | 0 | 2 |
+| Held-out | ESLint | 1,264 | 0 | — | — |
+
+The blind pooled sheets contain 27 rich-test locations (9 TP, 18 FP) and 9 held-out locations (2 TP, 7 FP). One held-out rn-secscan location had findings from two rules and was deduplicated by file and line. Semgrep's five mapped locations were all false positives in this sample. ESLint's 2,156 messages were all outside the nine mapped categories under the selected config; they remain visible in the local raw reports and are not scored as zero detections.
+
+For the mapped pool only, rn-secscan found 9/9 rich-test and 2/2 held-out pooled true-positive locations; Semgrep found 0/9 and 0/2 respectively. This is relative recall against a pool seeded by these scanners, not true scanner recall. No comparable category mapping exists for the selected ESLint rules, so relative recall is not calculated for ESLint. Semgrep reported 55 parser/runtime errors across the ten scans; its figures are partial and should be read as a limited overlap comparison. All raw reports, the blind sheet, and the separate provenance map remain outside the repository.
 
 ## Scan and labeling procedure
 
@@ -313,3 +330,4 @@ Claude judging is opt-in and sends exported, best-effort-redacted code context t
 | 2026-10-06 | Added the coverage matrix, ground-truth testbed method, and pooled blind-labeling method with relative-recall and authorship limitations. |
 | 2026-10-10 | Development-only RNSEC003 iteration: generic entropy findings are suppressed for identifier-like literals assigned to KEY-suffixed names when the sensitive name tokens are present in the literal. The six labeled development false positives were storage-key labels; three available development checkouts were rescanned and produced no RNSEC003 findings. This is a rule-development result, not a performance estimate. |
 | 2026-10-10 | Recorded the development-only per-rule label breakdown and clarified that the increase from 49 to 70 labeled rows reflects 20 added TP labels and one `UNSURE`, not an accuracy improvement. |
+| 2026-10-10 | Corrected one rich-test RNSEC001 label after source review showed the stored value is a short-lived analytics identifier rather than an authentication credential. No scanner rule was tuned from rich-test data. |

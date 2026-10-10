@@ -27,11 +27,17 @@ export const BENCHMARK_RULE_MAP: Record<string, Record<string, BenchmarkCategory
   },
   eslint: {},
   semgrep: {
+    "java.android.security.exported_activity.exported_activity": "exported-components",
     "rnsec-benchmark-asyncstorage-sensitive": "asyncstorage-secrets",
     "rnsec-benchmark-cleartext-http": "cleartext-http",
     "rnsec-benchmark-sensitive-console": "sensitive-logging",
     "generic.secrets.security.detected-generic-secret": "hardcoded-secrets",
+    "generic.secrets.security.detected-generic-secret.detected-generic-secret": "hardcoded-secrets",
     "generic.secrets.security.detected-aws-access-key-id": "hardcoded-secrets",
+    "generic.secrets.security.detected-aws-access-key-id.detected-aws-access-key-id": "hardcoded-secrets",
+    "generic.secrets.security.detected-google-gcm-service-account": "hardcoded-secrets",
+    "generic.secrets.security.detected-google-gcm-service-account.detected-google-gcm-service-account": "hardcoded-secrets",
     "generic.secrets.security.detected-private-key": "hardcoded-secrets",
+    "generic.secrets.security.detected-private-key.detected-private-key": "hardcoded-secrets",
   },
 };

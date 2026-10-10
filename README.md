@@ -52,6 +52,15 @@ On the current development label set, 17 of 37 decided findings were true positi
 
 The authored testbed is a targeted regression suite, not an independent benchmark. Its current tool comparison and limitations are documented in `docs/evaluation-protocol.md`.
 
+The small real-app comparison used mapped findings pooled by file and line:
+
+| Set | rn-secscan | Semgrep | ESLint |
+|---|---:|---:|---|
+| Rich-test | 9/24 (37.5%; 95% CI 21.2%–57.3%) | 0/3 | no mapped rules |
+| Held-out | 2/7 (28.6%; 95% CI 8.2%–64.1%) | 0/2 | no mapped rules |
+
+These are file-and-line-deduplicated mapped findings, not prevalence estimates. Semgrep had parser/runtime errors in some scans, and the relative-recall limits and full run details are in `docs/evaluation-protocol.md`.
+
 **Please verify the MASVS IDs** against the [official MASVS controls](https://mas.owasp.org/MASVS/) before you publish. The mapping reflects my best reading of MASVS v2 and is the part of this project where accuracy matters most for credibility.
 
 ## Use in GitHub Actions

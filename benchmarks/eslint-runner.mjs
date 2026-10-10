@@ -44,6 +44,7 @@ export function runEslintTarget({ command, config, target, outputDir, outputName
     stdout = execFileSync(command, args, {
       cwd,
       encoding: "utf8",
+      maxBuffer: 64 * 1024 * 1024,
       shell: process.platform === "win32",
       stdio: ["ignore", "pipe", "pipe"],
     });

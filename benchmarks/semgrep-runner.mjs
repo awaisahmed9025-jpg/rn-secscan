@@ -36,6 +36,7 @@ export function runSemgrepTarget({ command = "semgrep", target, packs = getSemgr
   try {
     version = execFileSync(command, ["--version"], {
       encoding: "utf8",
+      maxBuffer: 128 * 1024 * 1024,
       shell: process.platform === "win32",
       stdio: ["ignore", "pipe", "pipe"],
     }).trim();
@@ -54,6 +55,7 @@ export function runSemgrepTarget({ command = "semgrep", target, packs = getSemgr
   try {
     const stdout = execFileSync(command, args, {
       encoding: "utf8",
+      maxBuffer: 128 * 1024 * 1024,
       shell: process.platform === "win32",
       stdio: ["ignore", "pipe", "pipe"],
     });
