@@ -224,6 +224,7 @@ By default, the scanner skips dependencies, build outputs, generated bundles, an
 - This is static, pattern-based analysis. It does not run the app or follow values through the codebase.
 - Some rules use name and syntax heuristics, so findings may need manual review.
 - Aliased imports and dynamically constructed values may not be recognized.
+- `npm audit` currently reports a high-severity `braces` advisory in the dependency chain `fast-glob` → `micromatch` → `braces`; npm reports no fix available. Review the advisory before using the scanner on untrusted input.
 - A clean scan does not prove that an app is secure.
 
 ## Development
