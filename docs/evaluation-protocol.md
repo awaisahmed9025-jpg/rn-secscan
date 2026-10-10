@@ -279,3 +279,4 @@ Claude judging is opt-in and sends exported, best-effort-redacted code context t
 | Date | Change |
 |---|---|
 | 2026-10-06 | Added the coverage matrix, ground-truth testbed method, and pooled blind-labeling method with relative-recall and authorship limitations. |
+| 2026-10-10 | Development-only RNSEC003 iteration: generic entropy findings are suppressed for identifier-like literals assigned to KEY-suffixed names when the sensitive name tokens are present in the literal. The six labeled development false positives were storage-key labels; three available development checkouts were rescanned and produced no RNSEC003 findings. This is a rule-development result, not a performance estimate. |

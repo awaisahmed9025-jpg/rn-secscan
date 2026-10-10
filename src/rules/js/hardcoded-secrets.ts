@@ -23,15 +23,28 @@ function stringValue(node: Node | undefined): string | undefined {
 }
 
 function isNameDerivedValue(name: string, value: string): boolean {
-  if (!/^[A-Za-z0-9]+(?:[_-][A-Za-z0-9]+)+$/.test(value)) return false;
+  const normalizedValue = value.replace(/^@/, "");
+  if (!/^[A-Za-z0-9]+(?:[_-][A-Za-z0-9]+)+$/.test(normalizedValue)) return false;
   const tokens = (text: string) =>
     text
       .replace(/([a-z])([A-Z])/g, "$1 $2")
       .toLowerCase()
       .split(/[^a-z0-9]+/)
       .filter(Boolean);
-  const valueTokens = new Set(tokens(value));
+  const valueTokens = new Set(tokens(normalizedValue));
   const nameTokens = tokens(name);
+  // A KEY-suffixed variable often names the storage slot rather than the
+  // credential itself (for example PASSWORDS_KEY = "saved_passwords").
+  // Ignore this narrow, name-derived form while retaining entropy checks for
+  // actual values assigned to API_KEY / SECRET_KEY variables.
+  const keyLabelTokens = nameTokens.filter((token) => token !== "key");
+  if (
+    nameTokens.includes("key") &&
+    keyLabelTokens.length > 0 &&
+    keyLabelTokens.every((token) => valueTokens.has(token))
+  ) {
+    return true;
+  }
   return (
     valueTokens.size >= 2 &&
     (nameTokens.every((token) => valueTokens.has(token)) || [...valueTokens].every((token) => nameTokens.includes(token)))

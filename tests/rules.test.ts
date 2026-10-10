@@ -60,6 +60,12 @@ describe("RNSEC003 hardcoded secrets", () => {
     expect(run(hardcodedSecrets, `const E2E_SEC_CHANGE_PASSWORD = "e2e_sec_change_password";`)).toHaveLength(0);
     expect(run(hardcodedSecrets, `const HEADER_X_example-app_PREAUTH_SECRET = "X-example-app-Preauth-Secret";`)).toHaveLength(0);
   });
+  it("ignores secret-named storage-key labels but still flags credential values", () => {
+    expect(run(hardcodedSecrets, `const PASSWORDS_KEY = "saved_passwords";`)).toHaveLength(0);
+    expect(run(hardcodedSecrets, `const SYNC_AUTH_TOKEN_KEY = "@sync_auth_token";`)).toHaveLength(0);
+    expect(run(hardcodedSecrets, `const SYNC_PASSWORD_KEY = "sync_session_password";`)).toHaveLength(0);
+    expect(run(hardcodedSecrets, `const API_KEY = "k8Vd2xQp9LmZr4TbW7Yn";`)).toHaveLength(1);
+  });
 });
 
 describe("RNSEC004 sensitive logging", () => {
