@@ -22,6 +22,7 @@
     "scan:fixtures": "tsx src/cli.ts scan fixtures/vulnerable",
     "benchmark:security": "node benchmarks/run-security-tools.mjs",
     "benchmark:testbed": "npm run build && node benchmarks/score-testbed.mjs",
+    "benchmark:testbed:all": "npm run build && node benchmarks/score-all-testbed.mjs",
     "prepublishOnly": "npm run build && npm test"
   },
   "keywords": [

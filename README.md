@@ -2,7 +2,7 @@
 
 Static security scanner for **React Native** apps. It checks your JS/TS code *and* the native config files (`AndroidManifest.xml`, `Info.plist`), and reports findings as **SARIF** with every rule mapped to an **OWASP MASVS** control, so results show up directly in GitHub pull requests and the Security tab.
 
-> Status: **v0.1 (Phase 1)**. Rule-based engine only. AI triage, data-flow context, auto-fix patches and benchmarks are on the roadmap below.
+> Status: **v0.1**. Includes deterministic rules, previewable fixes, optional AI triage, and evaluation tooling. Data-flow tracking is not implemented yet.
 
 ## Quick start
 
@@ -45,6 +45,12 @@ rn-secscan rules                      list rules and their MASVS mapping
 | RNSEC102 | Android `usesCleartextTraffic="true"` | MASVS-NETWORK-1 | high |
 | RNSEC103 | Exported Android components without a permission | MASVS-PLATFORM-1 | high / low |
 | RNSEC110 | iOS ATS disabled or HTTP exceptions in `Info.plist` | MASVS-NETWORK-1 | high / medium |
+
+## Evaluation snapshot
+
+On the current development label set, 17 of 37 decided findings were true positives (45.9% precision; Wilson 95% CI 31.0%–61.6%). One `UNSURE` label is excluded. This is an exploratory, positive-biased development set and measures triage precision only; it does not estimate scanner recall or real-world prevalence. Results are reported by rule in `docs/evaluation-protocol.md`. Do not combine these figures with rich-test or held-out labels.
+
+The authored testbed is a targeted regression suite, not an independent benchmark. Its current tool comparison and limitations are documented in `docs/evaluation-protocol.md`.
 
 **Please verify the MASVS IDs** against the [official MASVS controls](https://mas.owasp.org/MASVS/) before you publish. The mapping reflects my best reading of MASVS v2 and is the part of this project where accuracy matters most for credibility.
 

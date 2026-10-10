@@ -245,6 +245,18 @@ The tool comparison has three complementary parts:
 
 The pooled sheet must not include development-set or positive-biased apps. Raw tool reports, JSONL exports, pooled provenance, and labels remain outside the repository.
 
+### Authored testbed run
+
+On 2026-10-10, the authored `rn-vuln-app` ground truth was scored with rn-secscan 0.1.0, ESLint 9.39.5 using the repository security-plugin config, and Semgrep 1.180.0 using `p/secrets` plus the three testbed-specific rules in `benchmarks/semgrep/rn-security.yml`.
+
+| Tool | TP | FP | FN | Precision | Recall | F1 |
+|---|---:|---:|---:|---|---|---:|
+| rn-secscan | 9 | 0 | 3 | 9/9 = 100.0% (95% CI 70.1%–100.0%) | 9/12 = 75.0% (95% CI 46.8%–91.1%) | 85.7% |
+| ESLint | 0 | 0 | 12 | n/a (no findings) | 0/12 = 0.0% (95% CI 0.0%–24.3%) | n/a |
+| Semgrep | 3 | 1 | 9 | 3/4 = 75.0% (95% CI 30.1%–95.4%) | 3/12 = 25.0% (95% CI 8.9%–53.2%) | 37.5% |
+
+This is a targeted regression suite written by the scanner author, not an independent estimate. Semgrep's custom rules are fixture-specific and must not be presented as the performance of its general community rules.
+
 ## Scan and labeling procedure
 
 1. Record the scanner commit, upstream repository, source commit, app subdirectory, scan command, and date for every run.
