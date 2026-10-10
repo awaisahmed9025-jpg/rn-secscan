@@ -14,8 +14,8 @@ jobs:
   scan:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.1.0
         with:
           node-version: 20
           cache: npm
@@ -23,7 +23,7 @@ jobs:
       - run: npm run build
       - name: Run rn-secscan
         run: node dist/cli.js scan fixtures/vulnerable --format sarif --output results.sarif --fail-on none
-      - uses: github/codeql-action/upload-sarif@v3
+      - uses: github/codeql-action/upload-sarif@v4.38.3
         with:
           sarif_file: results.sarif
           category: rn-secscan
