@@ -1,0 +1,10 @@
+node_modules
+dist
+*.sarif
+/data/
+.DS_Store
+evaluation/*.csv
+*.jsonl
+*.sarif
+*.rar
+.vscode/

@@ -1,0 +1,29 @@
+# Demo: scans the intentionally vulnerable fixtures and uploads the SARIF report
+# so findings appear in the repo's Security tab (Security > Code scanning).
+# Requires a PUBLIC repo (or GitHub Advanced Security on private repos).
+# Delete or change the scan path once you point this at a real app.
+name: Security scan (demo)
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+  security-events: write
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Run rn-secscan
+        run: node dist/cli.js scan fixtures/vulnerable --format sarif --output results.sarif --fail-on none
+      - uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results.sarif
+          category: rn-secscan
