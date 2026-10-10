@@ -172,6 +172,26 @@ The resulting `node dist/cli.js eval --labels data\labels.csv` output includes t
 
 These figures measure triage precision only. They do not measure scanner recall, and the positive-biased development expansion must not be described as representative prevalence data.
 
+### Current development-set rule breakdown
+
+The current development sheet has 37 decided findings (17 TP, 20 FP) and one `UNSURE`. The breakdown below is for development findings only; it excludes rich-test and held-out rows.
+
+| Rule | TP | FP | Unsure |
+|---|---:|---:|---:|
+| RNSEC001 | 8 | 9 | 0 |
+| RNSEC002 | 1 | 0 | 0 |
+| RNSEC003 | 0 | 6 | 0 |
+| RNSEC004 | 4 | 0 | 1 |
+| RNSEC005 | 0 | 1 | 0 |
+| RNSEC101 | 0 | 2 | 0 |
+| RNSEC102 | 1 | 0 | 0 |
+| RNSEC103 | 0 | 2 | 0 |
+| RNSEC110 | 3 | 0 | 0 |
+
+All six labeled development-set RNSEC003 false positives were name-derived storage-key strings assigned to `KEY`-suffixed identifiers, rather than credential values. The rule change and development-only rescans are recorded in the change log. This diagnosis applies to those six labeled findings only; the rule still requires review on future development findings.
+
+The local label sheet now contains additional labeled findings compared with the earlier 49-row sheet: 20 additional TP labels and one `UNSURE`, with the FP count unchanged at 40. This is a change in labeled records and set coverage, not evidence of improved accuracy. Do not quote a pooled precision from these mixed sets.
+
 ## Rich-test candidate discovery
 
 The Claude smoke test was deferred on 2026-10-04 because no API key was provided. A separate rich-test batch was therefore prepared without scanning or sending source code to a judge. The candidates below are disjoint from the seven repositories scanned in the development expansion and from the six repositories in the held-out set.
@@ -292,3 +312,4 @@ Claude judging is opt-in and sends exported, best-effort-redacted code context t
 |---|---|
 | 2026-10-06 | Added the coverage matrix, ground-truth testbed method, and pooled blind-labeling method with relative-recall and authorship limitations. |
 | 2026-10-10 | Development-only RNSEC003 iteration: generic entropy findings are suppressed for identifier-like literals assigned to KEY-suffixed names when the sensitive name tokens are present in the literal. The six labeled development false positives were storage-key labels; three available development checkouts were rescanned and produced no RNSEC003 findings. This is a rule-development result, not a performance estimate. |
+| 2026-10-10 | Recorded the development-only per-rule label breakdown and clarified that the increase from 49 to 70 labeled rows reflects 20 added TP labels and one `UNSURE`, not an accuracy improvement. |
