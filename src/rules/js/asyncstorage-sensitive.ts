@@ -1,6 +1,7 @@
 import { Node, SyntaxKind } from "ts-morph";
 import type { Finding, JsRule } from "../../types";
 import { makeFinding, SENSITIVE_NAME } from "../../utils";
+import { flowContext, traceStoredValueFlows } from "../../dataflow";
 
 const WRITE_METHODS = new Set(["setItem", "multiSet", "mergeItem", "multiMerge"]);
 
@@ -14,6 +15,7 @@ export const asyncStorageSensitive: JsRule = {
   severity: "high",
   check(sf) {
     const findings: Finding[] = [];
+    const flows = traceStoredValueFlows(sf);
     for (const call of sf.getDescendantsOfKind(SyntaxKind.CallExpression)) {
       const expr = call.getExpression();
       if (!Node.isPropertyAccessExpression(expr)) continue;
@@ -23,12 +25,14 @@ export const asyncStorageSensitive: JsRule = {
       const firstArg = call.getArguments()[0];
       if (!firstArg || !SENSITIVE_NAME.test(firstArg.getText())) continue;
 
+      const key = firstArg.getText();
+      const relatedFlows = flows.filter((flow) => flow.key === key);
       findings.push(
         makeFinding(
           asyncStorageSensitive,
           sf.getFilePath(),
           call.getStartLineNumber(),
-          "Sensitive value written to AsyncStorage, which is unencrypted. Use Keychain/Keystore-backed storage (e.g. react-native-keychain).",
+          `Sensitive value written to AsyncStorage, which is unencrypted. Use Keychain/Keystore-backed storage (e.g. react-native-keychain).${relatedFlows.map(flowContext).join("")}`,
           call.getText()
         )
       );

@@ -2,7 +2,7 @@
 
 Static security scanner for **React Native** apps. It checks your JS/TS code *and* the native config files (`AndroidManifest.xml`, `Info.plist`), and reports findings as **SARIF** with every rule mapped to an **OWASP MASVS** control, so results show up directly in GitHub pull requests and the Security tab.
 
-> Status: **v0.1**. Includes deterministic rules, previewable fixes, optional AI triage, and evaluation tooling. Data-flow tracking is not implemented yet.
+> Status: **v0.1**. Includes deterministic rules, previewable fixes, optional AI triage, lightweight same-file token-flow context, and evaluation tooling.
 
 ## Quick start
 
@@ -60,6 +60,12 @@ The small real-app comparison used mapped findings pooled by file and line:
 | Held-out | 2/7 (28.6%; 95% CI 8.2%–64.1%) | 0/2 | no mapped rules |
 
 These are file-and-line-deduplicated mapped findings, not prevalence estimates. Semgrep had parser/runtime errors in some scans, and the relative-recall limits and full run details are in `docs/evaluation-protocol.md`.
+
+The [authored testbed card](docs/dataset-card.md) describes the fixtures and their limits. The [optional judge model card](docs/model-card.md) records its scope, data handling, and the fact that it has not been evaluated.
+
+## Data-flow context
+
+For sensitive values read from `AsyncStorage`, rn-secscan follows simple local variable aliases in the same file and adds context when the value reaches a `fetch`/Axios call, `console.*`, a state setter, `dispatch`, or another AsyncStorage write. This context does not add findings by itself and does not follow values across functions, files, or complex wrappers.
 
 **Please verify the MASVS IDs** against the [official MASVS controls](https://mas.owasp.org/MASVS/) before you publish. The mapping reflects my best reading of MASVS v2 and is the part of this project where accuracy matters most for credibility.
 

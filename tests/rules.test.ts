@@ -26,6 +26,18 @@ describe("RNSEC001 AsyncStorage", () => {
   it("ignores reads", () => {
     expect(run(asyncStorageSensitive, `AsyncStorage.getItem("authToken");`)).toHaveLength(0);
   });
+  it("adds same-file context when a stored token reaches a network sink", () => {
+    const code = `async function load() {
+      await AsyncStorage.setItem("authToken", token);
+      const stored = await AsyncStorage.getItem("authToken");
+      const alias = stored;
+      await fetch(url, { headers: { Authorization: alias } });
+      setAuthState(alias);
+    }`;
+    const [finding] = run(asyncStorageSensitive, code);
+    expect(finding.message).toContain("reaches a network call");
+    expect(finding.message).toContain("reaches state or storage");
+  });
 });
 
 describe("RNSEC002 insecure HTTP", () => {
@@ -77,6 +89,15 @@ describe("RNSEC004 sensitive logging", () => {
     expect(run(sensitiveLogging, `console.log("Token refreshed");`)).toHaveLength(0);
     expect(run(sensitiveLogging, `if (__DEV__) { console.log(authToken); }`)).toHaveLength(0);
     expect(run(sensitiveLogging, `console.log(tokenCount, isTokenValid);`)).toHaveLength(0);
+  });
+  it("identifies when a logged token came from AsyncStorage", () => {
+    const code = `async function logStoredToken() {
+      const authToken = await AsyncStorage.getItem("authToken");
+      console.log(authToken);
+    }`;
+    const [finding] = run(sensitiveLogging, code);
+    expect(finding.message).toContain("read from AsyncStorage");
+    expect(finding.message).toContain("reaches a console log");
   });
 });
 

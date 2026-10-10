@@ -1,6 +1,7 @@
 import { Node, SyntaxKind } from "ts-morph";
 import type { Finding, JsRule } from "../../types";
 import { makeFinding, SENSITIVE_NAME } from "../../utils";
+import { flowContext, traceStoredValueFlows } from "../../dataflow";
 
 const LOG_METHODS = new Set(["log", "info", "warn", "error", "debug", "trace"]);
 const NOT_A_VALUE = /^(is|has|should)[A-Z]|(Count|Length|Expired|Valid|Type|Label)$/;
@@ -25,6 +26,7 @@ export const sensitiveLogging: JsRule = {
   severity: "medium",
   check(sf) {
     const findings: Finding[] = [];
+    const flows = traceStoredValueFlows(sf);
     for (const call of sf.getDescendantsOfKind(SyntaxKind.CallExpression)) {
       const expr = call.getExpression();
       if (!Node.isPropertyAccessExpression(expr)) continue;
@@ -42,12 +44,13 @@ export const sensitiveLogging: JsRule = {
       }
       if (!hit) continue;
 
+      const flow = flows.find((item) => item.sink === "log" && item.sinkLine === call.getStartLineNumber());
       findings.push(
         makeFinding(
           sensitiveLogging,
           sf.getFilePath(),
           call.getStartLineNumber(),
-          `"${hit}" is passed to console.${expr.getName()}. Remove it or guard the log with __DEV__.`,
+          `"${hit}" is passed to console.${expr.getName()}. Remove it or guard the log with __DEV__.${flow ? flowContext(flow) : ""}`,
           call.getText()
         )
       );
